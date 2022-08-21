@@ -1,0 +1,39 @@
+Instrucciones
+==========
+
+* Abra una terminal y cambie al directorio de este README
+
+* Compile el archivo src/checksync.cpp:
+
+    g++ ./src/checksync.cpp -O2 -o ./checksync
+
+* Coloca el archivo con el código fuente de tu trabajo en el directorio in/
+
+* En el cambio de terminal a directorio in/
+
+    cd ./in
+    
+* Ejecute el script ./grade
+
+
+Otras informaciones
+===================
+
+src/gen.py -- genera archivos aleatorios file1 .. file200
+
+src/check.py: 	toma una palabra en la entrada estándar y un nombre
+		desde un archivo en la línea de comandos. abre el archivo
+		y lee la descripción de un autómata, luego comprueba
+		si la palabra leída en la entrada estándar se sincroniza
+		este autómata
+
+src/checksync.cpp -- alternativa al script check.py. 	Para
+                       					comprobar más rápido si una palabra
+							sincroniza un autómata, compila este programa y
+							úselo en lugar de checksync en el directorio EP3
+							(es decir, reemplace el enlace checksync con este
+							programa compilado)
+
+src/difficult.py -- 	genera instancias difíciles con un cierto
+			número de estados que se deben pasar en la línea
+			comando (ejemplo: ./difícil.py 70)

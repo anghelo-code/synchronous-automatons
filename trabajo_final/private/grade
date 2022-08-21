@@ -1,0 +1,93 @@
+#!/bin/bash
+#########################
+# COMPILAR
+#########################
+if [ -f *.java ]; then
+    for file in ./*.java
+    do
+	javac $file
+	base=$(basename $file .java)
+	echo "#!/bin/bash" > a.out
+	echo "cat - | java $base" >> a.out
+	break;
+    done
+    chmod 755 a.out
+elif [ -f *.py ]; then
+    for file in *.py
+    do
+	cp $file a.out
+	break;
+    done
+    chmod 755 a.out
+elif [ -f *.lisp ]; then
+    for file in *.lisp
+    do
+        sbcl --load $file --eval "(save-lisp-and-die \"a.out\" :executable t :toplevel #'main)"
+        break;
+    done
+    chmod 755 a.out
+elif [ -f *.c ]; then
+    for file in *.c
+    do
+	gcc $file
+	break;
+    done
+elif [ -f *.cpp ]; then 
+    for file in *.cpp
+    do
+	g++ $file
+	break;
+    done
+else
+    PWD=$(pwd)
+    echo "Nenhum arquivo contendo o código fonte foi encontrado no diretório $PWD"
+    exit
+fi
+
+#########################
+# EXECUTAR TESTES
+#########################
+
+count=0
+total=0
+
+mkdir ../tests 2> /dev/null
+rm ../tests/* -f 2> /dev/null
+
+for f in file*
+do
+    let total=total+1
+done
+
+for f in file*
+do
+    timeout -k 5s 5s ./a.out < "$f" > "../tests/$f"
+    if [ "$?" -ne "0" ]; then
+	echo "$f: timeout"
+    else
+	W=$(cat "../out/$f")
+	if [ "$W" == "NAO" ]; then
+	    if [ "$(diff -w ../tests/$f ../out/$f)" ]; then
+		echo "$f: not ok"
+	    else
+		echo "$f: ok"
+		let count=count+1
+	    fi
+	else
+	    cat "../tests/$f" | ../checksync "$f"
+	    if [ "$?" -eq "0" ]; then
+		echo "$f: ok"
+		let count=count+1
+	    else
+		echo "$f: not ok"
+	    fi
+	fi
+
+    fi
+done
+
+echo -n "Nota " 
+echo -n $(echo "scale=2; $count*10/$total" | bc)
+echo " ($count de $total)."
+
+
