@@ -12,22 +12,22 @@ def LeerTransiciones():
 
 
 def GenerarAutomata(nroEstados):
-    automata = []
+    automata = {}
     listaEstados = []
     for i in range(nroEstados):
         transiciones = LeerTransiciones()
         AgregarAListaEstados(listaEstados, transiciones)
 
-        CrearEstado(transiciones, automata)
+        CrearEstado(transiciones, automata, i)
 
     if len(listaEstados) < nroEstados:
         return False         
 
     return automata
 
-def CrearEstado(transiciones, automata):
-    estado = CrearTransiciones(transiciones)
-    automata.append(estado)
+def CrearEstado(transiciones, automata, estado):
+    estadoCreado = CrearTransiciones(transiciones)
+    automata[str(estado)] = estadoCreado
     return automata
 
 
@@ -43,18 +43,10 @@ def CrearTransiciones(transicionesEstado):
 
     for i in range(len(transicionesEstado)):
         letra = abecedario[i]
-        result[letra] = int(transicionesEstado[i])
+        result[letra] = str(transicionesEstado[i])
     return result
 
 
-def GenerarTransiciones(transicionesEstado):
-    result = {}
-    abecedario = "abcdefghijklmnopqrstuvwxyz"
-
-    for i in range(len(transicionesEstado)):
-        letra = abecedario[i]
-        result[letra] = int(transicionesEstado[i])
-    return result
 
 def ResolverProblema(automata):
     print()
@@ -85,8 +77,21 @@ def CrearCombinaciones(iterable, r):
 
         yield list(tuple(pool[i] for i in indices))
 
-    
 
+def HallarTransicion(automata, estado):
+    print()
+
+
+
+def CrearTranciones2( automata, estado ):
+    transicionesEstado = HallarTransicion()
+    result = {}
+    abecedario = "abcdefghijklmnopqrstuvwxyz"
+
+    for i in range(len(transicionesEstado)):
+        letra = abecedario[i]
+        result[letra] = str(transicionesEstado[i])
+    return result
 
 
 def main():
@@ -103,8 +108,8 @@ def main():
     print(automata)
 
 
-# main()
+main()
 
-num=[1,2,3,4]
-newNum = [i for i in CrearCombinaciones(num, 2)]
-print(newNum)
+# num=[1,2,3,4]
+# newNum = [i for i in CrearCombinaciones(num, 2)]
+# print(newNum)
