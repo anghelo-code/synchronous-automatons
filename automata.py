@@ -1,3 +1,4 @@
+
 transiciones = "abcdefghijklmnopqrstuvwxyz"
 
 def LeerDatosGenrales():
@@ -23,7 +24,7 @@ def GenerarAutomata(nroEstados):
     if len(listaEstados) < nroEstados:
         return False         
 
-    return automata
+    return [automata, listaEstados]
 
 def CrearEstado(transiciones, automata, estado):
     estadoCreado = CrearTransiciones(transiciones)
@@ -78,19 +79,53 @@ def CrearCombinaciones(iterable, r):
         yield list(tuple(pool[i] for i in indices))
 
 
-def HallarTransicion(automata, estado):
-    print()
+def AgregarNewEstados(automata, nroEstados, estadosIniciales):
+    estados =  []
+
+    for i in range(2,nroEstados+1):
+        estados.extend(CrearCombinaciones(estadosIniciales, i))
+
+    AgregarValores(estados, automata)
 
 
+def AgregarValores(estados, automata):
+    for estado in estados:
+        i=-1
+        estado = ','.join(estado)
+        while estado[i] != ",":
+            i-=1
+    
+        estadoUnico = estado[(i+1):]
+        oldEstado = estado[:i]
 
-def CrearTranciones2( automata, estado ):
-    transicionesEstado = HallarTransicion()
+        transiciones = HallarTransiciones(automata, estadoUnico, oldEstado)
+
+        automata[estado] = transiciones
+
+
+def HallarTransiciones(automata, estadoUnico, oldEstado):
     result = {}
     abecedario = "abcdefghijklmnopqrstuvwxyz"
+    temp = automata[estadoUnico]
+    temp2 = automata[oldEstado]
 
-    for i in range(len(transicionesEstado)):
+
+    for i in range(len(automata['1'])):
         letra = abecedario[i]
-        result[letra] = str(transicionesEstado[i])
+        tempTran = temp[letra]
+        temp2Tran = temp2[letra]
+
+        tempTran = tempTran.split(',')
+        temp2Tran = temp2Tran.split(',')
+
+        tempTran += temp2Tran   
+        transicionesEstado = list(set(tempTran))
+        transicionesEstado.sort()
+
+        transicionesEstado = ','.join(transicionesEstado)
+
+        result[letra] = str(transicionesEstado)
+
     return result
 
 
@@ -100,7 +135,12 @@ def main():
     nroEstados = varTemp[0]
     nroTransiciones = varTemp[1]
 
-    automata = GenerarAutomata(nroEstados)
+    result = GenerarAutomata(nroEstados)
+    automata = result[0]
+    estadosIniciales = result[1]
+    estadosIniciales.sort()
+
+    AgregarNewEstados(automata, nroEstados, estadosIniciales)
 
     # resultado = ResolverProblema(automata)
     # print(resultado)
@@ -109,6 +149,16 @@ def main():
 
 
 main()
+
+# automata = { '4': {'a': '2', 'b': "3"}, '1': {'a': '3' , 'b': '1'} ,'1,2,3': {'a': '1,2,4', 'b': '1,2'} }
+
+# num = '1,2,3,4'
+
+# num1 = num[(-2+1):]
+# num2 = num[:-2]
+
+# result =  HallarTransiciones(automata, num1, num2)
+# print("num1: ", result)
 
 # num=[1,2,3,4]
 # newNum = [i for i in CrearCombinaciones(num, 2)]
