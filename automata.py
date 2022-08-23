@@ -1,4 +1,3 @@
-
 transiciones = "abcdefghijklmnopqrstuvwxyz"
 
 def LeerDatosGenrales():
@@ -14,21 +13,24 @@ def LeerTransiciones():
 
 def GenerarAutomata(nroEstados):
     automata = {}
+    matriz = {}
     listaEstados = []
     for i in range(nroEstados):
         transiciones = LeerTransiciones()
         AgregarAListaEstados(listaEstados, transiciones)
 
-        CrearEstado(transiciones, automata, i)
+        CrearEstado(transiciones, automata, matriz, i)
 
     if len(listaEstados) < nroEstados:
         return False         
 
-    return [automata, listaEstados]
+    return automata, matriz,listaEstados
 
-def CrearEstado(transiciones, automata, estado):
-    estadoCreado = CrearTransiciones(transiciones)
+def CrearEstado(transiciones, automata, matriz, estado):
+    estadoCreado, transicionesMatriz = CrearTransiciones(transiciones, estado)
     automata[str(estado)] = estadoCreado
+    matriz[str(estado)] = transicionesMatriz
+    
     return automata
 
 
@@ -38,20 +40,28 @@ def AgregarAListaEstados(arreglo, transiciones):
             arreglo.append(i)
 
 
-def CrearTransiciones(transicionesEstado):
+def CrearTransiciones(transicionesEstado, estado):
     result = {}
+    transicionesMatriz = {}
     abecedario = "abcdefghijklmnopqrstuvwxyz"
+    # print(estado)
+    # print('\n')
 
     for i in range(len(transicionesEstado)):
         letra = abecedario[i]
         result[letra] = str(transicionesEstado[i])
-    return result
+        
+        if str(estado) == str(transicionesEstado[i]): 
+            transicionesMatriz[str(transicionesEstado[i])] = 20
+
+        elif len(str(estado).split(',')) > len(str(transicionesEstado[i]).split(',')):
+            transicionesMatriz[str(transicionesEstado[i])] = 1
+
+        else :
+            transicionesMatriz[str(transicionesEstado[i])] = 2
 
 
-
-def ResolverProblema(automata):
-    print()
-    return ""
+    return result, transicionesMatriz
 
 
 def CrearCombinaciones(iterable, r):
@@ -79,16 +89,16 @@ def CrearCombinaciones(iterable, r):
         yield list(tuple(pool[i] for i in indices))
 
 
-def AgregarNewEstados(automata, nroEstados, estadosIniciales):
+def AgregarNewEstados(automata, matriz, nroEstados, estadosIniciales):
     estados =  []
 
     for i in range(2,nroEstados+1):
         estados.extend(CrearCombinaciones(estadosIniciales, i))
 
-    AgregarValores(estados, automata)
+    AgregarValores(estados, automata, matriz)
 
 
-def AgregarValores(estados, automata):
+def AgregarValores(estados, automata, matriz):
     for estado in estados:
         i=-1
         estado = ','.join(estado)
@@ -98,13 +108,16 @@ def AgregarValores(estados, automata):
         estadoUnico = estado[(i+1):]
         oldEstado = estado[:i]
 
-        transiciones = HallarTransiciones(automata, estadoUnico, oldEstado)
+        transiciones, transicionesMatriz = HallarTransiciones(automata, estadoUnico, oldEstado, estado)
 
         automata[estado] = transiciones
+        matriz[estado] = transicionesMatriz
 
 
-def HallarTransiciones(automata, estadoUnico, oldEstado):
+
+def HallarTransiciones(automata, estadoUnico, oldEstado, estado):
     result = {}
+    resultMatriz = {}
     abecedario = "abcdefghijklmnopqrstuvwxyz"
     temp = automata[estadoUnico]
     temp2 = automata[oldEstado]
@@ -126,7 +139,16 @@ def HallarTransiciones(automata, estadoUnico, oldEstado):
 
         result[letra] = str(transicionesEstado)
 
-    return result
+        if estado == str(transicionesEstado): 
+            resultMatriz[str(transicionesEstado)] = 20
+
+        elif len(estado.split(',')) > len(transicionesEstado.split(',')):
+            resultMatriz[str(transicionesEstado)] = 1
+
+        else :
+            resultMatriz[str(transicionesEstado)] = 2
+
+    return result, resultMatriz
 
 
 def dijkstra(Grafo, salida):
@@ -159,21 +181,20 @@ def main():
     nroEstados = varTemp[0]
     nroTransiciones = varTemp[1]
 
-    result = GenerarAutomata(nroEstados)
-    automata = result[0]
-    estadosIniciales = result[1]
+    automata, matriz, estadosIniciales = GenerarAutomata(nroEstados)
     estadosIniciales.sort()
+    print(matriz)
 
-    AgregarNewEstados(automata, nroEstados, estadosIniciales)
+    AgregarNewEstados(automata, matriz, nroEstados, estadosIniciales)
 
-    print(automata)
-    print('\n')
+    # print(matriz)
+    # print('\n')
 
-    # result2, dist, prev = dijkstra(automata, '1,2,3,4')
+    result2, dist, prev = dijkstra( matriz, '0,1,2,3')
 
-    # print('resultado: ', result2)
-    # print('dist: ' , dist)
-    # print('prev: ', prev)
+    print('resultado: ', result2)
+    print('dist: ' , dist)
+    print('prev: ', prev)
 
 
 # main()
@@ -229,10 +250,10 @@ grafo3 = {
 }
 
 
-s, distancia, previos = dijkstra(grafo3, '0,1,2,3')
-print(f"{s=}")
-print(f"{distancia=}")
-print(f"{previos=}")
+# s, distancia, previos = dijkstra(grafo3, '0,1,2,3')
+# print(f"{s=}")
+# print(f"{distancia=}")
+# print(f"{previos=}")
 
 
 
