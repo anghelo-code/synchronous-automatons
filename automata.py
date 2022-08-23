@@ -129,6 +129,30 @@ def HallarTransiciones(automata, estadoUnico, oldEstado):
     return result
 
 
+def dijkstra(Grafo, salida):
+    dist, prev = {}, {}
+    result = []
+
+    for vertice in Grafo:
+        dist[vertice] = float("inf")
+        prev[vertice] = None
+    dist[salida] = 0
+
+    Q = [vertice for vertice in Grafo]
+
+    while Q:
+        u = min(Q, key=dist.get)
+        Q.remove(u)
+        result.append(u)
+
+        for vecino in Grafo[u]:
+            if vecino in Q and dist[vecino] > dist[u] + Grafo[u][vecino]:
+                dist[vecino] = dist[u] + Grafo[u][vecino]
+                prev[vecino] = u
+
+    return result, dist, prev
+
+
 def main():
     varTemp = LeerDatosGenrales()
 
@@ -142,13 +166,75 @@ def main():
 
     AgregarNewEstados(automata, nroEstados, estadosIniciales)
 
-    # resultado = ResolverProblema(automata)
-    # print(resultado)
-
     print(automata)
+    print('\n')
+
+    # result2, dist, prev = dijkstra(automata, '1,2,3,4')
+
+    # print('resultado: ', result2)
+    # print('dist: ' , dist)
+    # print('prev: ', prev)
 
 
-main()
+# main()
+
+
+
+
+grafo = {
+    'a': {'b': 4, 'c': 3},
+    'b': {'d': 5},
+    'c': {'b': 2, 'd': 3, 'e': 6},
+    'd': {'f': 5, 'e': 1},
+    'e': {'g': 5},
+    'g': {'z': 4},
+    'f': {'g': 2, 'z': 7},
+    'z': {}
+}
+
+grafo2 = {
+    '0': {'a': '1', 'b': '1'}, 
+    '1': {'a': '1', 'b': '2'}, 
+    '2': {'a': '2', 'b': '3'}, 
+    '3': {'a': '3', 'b': '0'}, 
+    '0,1': {'a': '1', 'b': '1,2'}, 
+    '0,2': {'a': '1,2', 'b': '1,3'}, 
+    '0,3': {'a': '1,3', 'b': '0,1'}, 
+    '1,2': {'a': '1,2', 'b': '2,3'}, 
+    '1,3': {'a': '1,3', 'b': '0,2'}, 
+    '2,3': {'a': '2,3', 'b': '0,3'}, 
+    '0,1,2': {'a': '1,2', 'b': '1,2,3'}, 
+    '0,1,3': {'a': '1,3', 'b': '0,1,2'}, 
+    '0,2,3': {'a': '1,2,3', 'b': '0,1,3'}, 
+    '1,2,3': {'a': '1,2,3', 'b': '0,2,3'}, 
+    '0,1,2,3': {'a': '1,2,3', 'b': '0,1,2,3'}
+}
+
+grafo3 = {
+    '0': {'1': 2, '1': 2}, 
+    '1': {'1': 20, '2': 2}, 
+    '2': {'2': 20, '3': 2}, 
+    '3': {'3': 20, '0': 2}, 
+    '0,1': {'1': 1, '1,2': 2}, 
+    '0,2': {'1,2': 2, '1,3': 2}, 
+    '0,3': {'1,3': 2, '0,1': 2}, 
+    '1,2': {'1,2': 20, '2,3': 2}, 
+    '1,3': {'1,3': 20, '0,2': 2}, 
+    '2,3': {'2,3': 20, '0,3': 2}, 
+    '0,1,2': {'1,2': 1, '1,2,3': 2}, 
+    '0,1,3': {'1,3': 1, '0,1,2': 2}, 
+    '0,2,3': {'1,2,3': 2, '0,1,3': 2}, 
+    '1,2,3': {'1,2,3': 20, '0,2,3': 2}, 
+    '0,1,2,3': {'1,2,3': 1, '0,1,2,3': 20}
+}
+
+
+s, distancia, previos = dijkstra(grafo3, '0,1,2,3')
+print(f"{s=}")
+print(f"{distancia=}")
+print(f"{previos=}")
+
+
 
 # automata = { '4': {'a': '2', 'b': "3"}, '1': {'a': '3' , 'b': '1'} ,'1,2,3': {'a': '1,2,4', 'b': '1,2'} }
 
