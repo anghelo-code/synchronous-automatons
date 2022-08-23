@@ -22,7 +22,7 @@ def GenerarAutomata(nroEstados):
         CrearEstado(transiciones, automata, matriz, i)
 
     if len(listaEstados) < nroEstados:
-        return False         
+        return False, {}, []         
 
     return automata, matriz,listaEstados
 
@@ -44,8 +44,6 @@ def CrearTransiciones(transicionesEstado, estado):
     result = {}
     transicionesMatriz = {}
     abecedario = "abcdefghijklmnopqrstuvwxyz"
-    # print(estado)
-    # print('\n')
 
     for i in range(len(transicionesEstado)):
         letra = abecedario[i]
@@ -213,9 +211,13 @@ def main():
     nroTransiciones = varTemp[1]
 
 
-
     automata, matriz, estadosIniciales = GenerarAutomata(nroEstados)
     estadosIniciales.sort()
+
+    if automata == False:
+        print('NAO')
+        return 
+
 
     AgregarNewEstados(automata, matriz, nroEstados, estadosIniciales)
 
@@ -225,7 +227,8 @@ def main():
     recoridoEstados = EncontrarCadena(prev, estadoFinal)
     result = DefinirResultado(automata, recoridoEstados)
 
-    print('resultado: ', result)
+    result = ''.join(result)
+    print(result)
 
 
 main()
