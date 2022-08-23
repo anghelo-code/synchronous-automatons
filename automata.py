@@ -175,29 +175,60 @@ def dijkstra(Grafo, salida):
     return result, dist, prev
 
 
+def EncontrarCadena(matriz, estadoFinal):
+    key = '0'
+    i = 0
+    result = []
+
+    while str(key) != str(estadoFinal) and i <10:
+        result.append(key)
+        key = matriz[key]
+            
+    result.append(estadoFinal)
+
+    return result
+
+
+def DefinirResultado(automata,recoridoEstados):
+    result = []
+    for i in range(len(recoridoEstados)-1, 0, -1):
+        estado = recoridoEstados[i]
+
+        for key, value in automata[estado].items():
+            if value == recoridoEstados[i-1]:
+                result.append(key)
+                break
+    
+    return result
+
+
+
+
+
+
 def main():
     varTemp = LeerDatosGenrales()
 
     nroEstados = varTemp[0]
     nroTransiciones = varTemp[1]
 
+
+
     automata, matriz, estadosIniciales = GenerarAutomata(nroEstados)
     estadosIniciales.sort()
-    print(matriz)
 
     AgregarNewEstados(automata, matriz, nroEstados, estadosIniciales)
 
-    # print(matriz)
-    # print('\n')
-
     result2, dist, prev = dijkstra( matriz, '0,1,2,3')
+    estadoFinal = ','.join(estadosIniciales)
 
-    print('resultado: ', result2)
-    print('dist: ' , dist)
-    print('prev: ', prev)
+    recoridoEstados = EncontrarCadena(prev, estadoFinal)
+    result = DefinirResultado(automata, recoridoEstados)
+
+    print('resultado: ', result)
 
 
-# main()
+main()
 
 
 
